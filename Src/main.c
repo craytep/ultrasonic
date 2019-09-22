@@ -112,18 +112,11 @@ int main(void)
   {
 	  flagg = 1;
 	  timing = 0;
-	  TIM7->CNT=0;
 	  HAL_TIM_PWM_Start(&htim1,TIM_CHANNEL_1);//включаем генерацию шима для излучений уз
 	  DWT_Delay(150);
 	  HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);//выключаем генерацию шима для излучений уз
       startTick = DWT->CYCCNT;
-	  HAL_TIM_Base_Start(&htim7);//включаем таймер для отсчета времени
-	  while(flagg){
-      if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9)) //проверяем состояние пина уз приемника
-		 break;
-	  }
-	  HAL_TIM_Base_Stop(&htim7);//выключаем таймер для отсчета времени
-	  timing=TIM7->CNT;//считываем состояние таймера
+	  while(!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9) && ((((DWT->CYCCNT)-startTick)/(SystemCoreClock/1000000)/29)<600));
 	  endTick = DWT->CYCCNT;
 	  rast = (endTick-startTick)/(SystemCoreClock/1000000);
 	  HAL_Delay(1000);
